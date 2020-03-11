@@ -48,3 +48,22 @@ variable "HEALTH_CHECK_PATH" {
     type = string
 
 }
+
+
+variable "APP_PROFILE" {
+  type = string
+}
+
+
+variable "APP_CONFIG" {
+  type = string
+  
+}
+variable "ENVIRONMENT_VARS" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+  description = "The environment variables to pass to the container. This is a list of maps"
+  default     = null
+}

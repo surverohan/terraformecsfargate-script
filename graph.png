@@ -1,0 +1,100 @@
+digraph {
+	compound = "true"
+	newrank = "true"
+	subgraph "root" {
+		"[root] aws_alb.main" [label = "aws_alb.main", shape = "box"]
+		"[root] aws_alb_listener.front_end" [label = "aws_alb_listener.front_end", shape = "box"]
+		"[root] aws_alb_target_group.app" [label = "aws_alb_target_group.app", shape = "box"]
+		"[root] aws_ecs_cluster.main" [label = "aws_ecs_cluster.main", shape = "box"]
+		"[root] aws_ecs_service.main" [label = "aws_ecs_service.main", shape = "box"]
+		"[root] aws_ecs_task_definition.app" [label = "aws_ecs_task_definition.app", shape = "box"]
+		"[root] aws_eip.gw" [label = "aws_eip.gw", shape = "box"]
+		"[root] aws_iam_role.ecs_task_execution_role" [label = "aws_iam_role.ecs_task_execution_role", shape = "box"]
+		"[root] aws_iam_role_policy_attachment.ecs_task_execution_role" [label = "aws_iam_role_policy_attachment.ecs_task_execution_role", shape = "box"]
+		"[root] aws_internet_gateway.gw" [label = "aws_internet_gateway.gw", shape = "box"]
+		"[root] aws_nat_gateway.gw" [label = "aws_nat_gateway.gw", shape = "box"]
+		"[root] aws_route.internet_access" [label = "aws_route.internet_access", shape = "box"]
+		"[root] aws_route_table.private" [label = "aws_route_table.private", shape = "box"]
+		"[root] aws_route_table_association.private" [label = "aws_route_table_association.private", shape = "box"]
+		"[root] aws_security_group.ecs_tasks" [label = "aws_security_group.ecs_tasks", shape = "box"]
+		"[root] aws_security_group.lb" [label = "aws_security_group.lb", shape = "box"]
+		"[root] aws_subnet.private" [label = "aws_subnet.private", shape = "box"]
+		"[root] aws_subnet.public" [label = "aws_subnet.public", shape = "box"]
+		"[root] aws_vpc.main" [label = "aws_vpc.main", shape = "box"]
+		"[root] data.aws_availability_zones.available" [label = "data.aws_availability_zones.available", shape = "box"]
+		"[root] data.aws_iam_policy_document.ecs_task_execution_role" [label = "data.aws_iam_policy_document.ecs_task_execution_role", shape = "box"]
+		"[root] output.alb_hostname" [label = "output.alb_hostname", shape = "note"]
+		"[root] provider.aws" [label = "provider.aws", shape = "diamond"]
+		"[root] var.APP_DEPLOYMENT_PORT" [label = "var.APP_DEPLOYMENT_PORT", shape = "note"]
+		"[root] var.APP_INSTANCE_COUNT" [label = "var.APP_INSTANCE_COUNT", shape = "note"]
+		"[root] var.AWS_ACCESS_KEY" [label = "var.AWS_ACCESS_KEY", shape = "note"]
+		"[root] var.AWS_ACCOUNT_ID" [label = "var.AWS_ACCOUNT_ID", shape = "note"]
+		"[root] var.AWS_AZ_COUNT" [label = "var.AWS_AZ_COUNT", shape = "note"]
+		"[root] var.AWS_REGION" [label = "var.AWS_REGION", shape = "note"]
+		"[root] var.AWS_SECRET_KEY" [label = "var.AWS_SECRET_KEY", shape = "note"]
+		"[root] var.ECS_TASK_EXC_ROLE_NAME" [label = "var.ECS_TASK_EXC_ROLE_NAME", shape = "note"]
+		"[root] var.FARGATE_CPU" [label = "var.FARGATE_CPU", shape = "note"]
+		"[root] var.FARGATE_MEMORY" [label = "var.FARGATE_MEMORY", shape = "note"]
+		"[root] var.HEALTH_CHECK_PATH" [label = "var.HEALTH_CHECK_PATH", shape = "note"]
+		"[root] var.IMAGE_REPO_NAME" [label = "var.IMAGE_REPO_NAME", shape = "note"]
+		"[root] aws_alb.main" -> "[root] aws_security_group.lb"
+		"[root] aws_alb.main" -> "[root] aws_subnet.public"
+		"[root] aws_alb_listener.front_end" -> "[root] aws_alb.main"
+		"[root] aws_alb_listener.front_end" -> "[root] aws_alb_target_group.app"
+		"[root] aws_alb_target_group.app" -> "[root] aws_vpc.main"
+		"[root] aws_ecs_cluster.main" -> "[root] provider.aws"
+		"[root] aws_ecs_service.main" -> "[root] aws_alb_listener.front_end"
+		"[root] aws_ecs_service.main" -> "[root] aws_ecs_cluster.main"
+		"[root] aws_ecs_service.main" -> "[root] aws_ecs_task_definition.app"
+		"[root] aws_ecs_service.main" -> "[root] aws_security_group.ecs_tasks"
+		"[root] aws_ecs_service.main" -> "[root] aws_subnet.private"
+		"[root] aws_ecs_service.main" -> "[root] var.APP_INSTANCE_COUNT"
+		"[root] aws_ecs_task_definition.app" -> "[root] aws_iam_role.ecs_task_execution_role"
+		"[root] aws_ecs_task_definition.app" -> "[root] var.APP_DEPLOYMENT_PORT"
+		"[root] aws_ecs_task_definition.app" -> "[root] var.FARGATE_CPU"
+		"[root] aws_ecs_task_definition.app" -> "[root] var.FARGATE_MEMORY"
+		"[root] aws_ecs_task_definition.app" -> "[root] var.IMAGE_REPO_NAME"
+		"[root] aws_eip.gw" -> "[root] aws_internet_gateway.gw"
+		"[root] aws_eip.gw" -> "[root] var.AWS_AZ_COUNT"
+		"[root] aws_iam_role.ecs_task_execution_role" -> "[root] data.aws_iam_policy_document.ecs_task_execution_role"
+		"[root] aws_iam_role.ecs_task_execution_role" -> "[root] var.ECS_TASK_EXC_ROLE_NAME"
+		"[root] aws_iam_role_policy_attachment.ecs_task_execution_role" -> "[root] aws_iam_role.ecs_task_execution_role"
+		"[root] aws_internet_gateway.gw" -> "[root] aws_vpc.main"
+		"[root] aws_nat_gateway.gw" -> "[root] aws_eip.gw"
+		"[root] aws_nat_gateway.gw" -> "[root] aws_subnet.public"
+		"[root] aws_route.internet_access" -> "[root] aws_internet_gateway.gw"
+		"[root] aws_route_table.private" -> "[root] aws_nat_gateway.gw"
+		"[root] aws_route_table_association.private" -> "[root] aws_route_table.private"
+		"[root] aws_route_table_association.private" -> "[root] aws_subnet.private"
+		"[root] aws_security_group.ecs_tasks" -> "[root] aws_security_group.lb"
+		"[root] aws_security_group.ecs_tasks" -> "[root] var.APP_DEPLOYMENT_PORT"
+		"[root] aws_security_group.lb" -> "[root] aws_vpc.main"
+		"[root] aws_subnet.private" -> "[root] aws_vpc.main"
+		"[root] aws_subnet.private" -> "[root] data.aws_availability_zones.available"
+		"[root] aws_subnet.private" -> "[root] var.AWS_AZ_COUNT"
+		"[root] aws_subnet.public" -> "[root] aws_vpc.main"
+		"[root] aws_subnet.public" -> "[root] data.aws_availability_zones.available"
+		"[root] aws_subnet.public" -> "[root] var.AWS_AZ_COUNT"
+		"[root] aws_vpc.main" -> "[root] provider.aws"
+		"[root] data.aws_availability_zones.available" -> "[root] provider.aws"
+		"[root] data.aws_iam_policy_document.ecs_task_execution_role" -> "[root] provider.aws"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] aws_ecs_service.main"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] aws_iam_role_policy_attachment.ecs_task_execution_role"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] aws_route.internet_access"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] aws_route_table_association.private"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] output.alb_hostname"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] var.AWS_ACCOUNT_ID"
+		"[root] meta.count-boundary (EachMode fixup)" -> "[root] var.HEALTH_CHECK_PATH"
+		"[root] output.alb_hostname" -> "[root] aws_alb.main"
+		"[root] provider.aws (close)" -> "[root] aws_ecs_service.main"
+		"[root] provider.aws (close)" -> "[root] aws_iam_role_policy_attachment.ecs_task_execution_role"
+		"[root] provider.aws (close)" -> "[root] aws_route.internet_access"
+		"[root] provider.aws (close)" -> "[root] aws_route_table_association.private"
+		"[root] provider.aws" -> "[root] var.AWS_ACCESS_KEY"
+		"[root] provider.aws" -> "[root] var.AWS_REGION"
+		"[root] provider.aws" -> "[root] var.AWS_SECRET_KEY"
+		"[root] root" -> "[root] meta.count-boundary (EachMode fixup)"
+		"[root] root" -> "[root] provider.aws (close)"
+	}
+}
+

@@ -129,15 +129,15 @@ resource "aws_alb_target_group" "app" {
   vpc_id      = "${aws_vpc.main.id}"
   target_type = "ip"
   
-  health_check {
-    healthy_threshold   = "3"
-    interval            = "30"
-    protocol            = "HTTP"
-    matcher             = "200"
-    timeout             = "3"
-    path                = var.HEALTH_CHECK_PATH
-    unhealthy_threshold = "2"
-  }
+  #health_check {
+  #  healthy_threshold   = "2"
+  #  interval            = "30"
+  #  protocol            = "HTTP"
+  #  matcher             = "200"
+  # timeout             = "3"
+  #  path                = var.HEALTH_CHECK_PATH
+  #  unhealthy_threshold = "2"
+  # }
   
 }
 
@@ -152,6 +152,25 @@ resource "aws_alb_listener" "front_end" {
     type             = "forward"
   }
 }
+
+### logs
+
+# Set up CloudWatch group and log stream and retain logs for 30 days
+resource "aws_cloudwatch_log_group" "cb_log_group" {
+  name              = "/ecs/cb-app"
+  retention_in_days = 30
+
+  tags = {
+    Name = "cb-log-group"
+  }
+}
+
+resource "aws_cloudwatch_log_stream" "cb_log_stream" {
+  name           = "cb-log-stream"
+  log_group_name = aws_cloudwatch_log_group.cb_log_group.name
+}
+
+
 
 ### Roles
 
@@ -205,6 +224,26 @@ resource "aws_ecs_task_definition" "app" {
     "memory": ${var.FARGATE_MEMORY},
     "name": "demo-graph-app",
     "networkMode": "awsvpc",
+	"environment": [
+	  {
+        "name": "spring.config.location",
+        "value": "${var.APP_CONFIG}"
+      },
+      {
+        "name": "spring.profiles.active",
+        "value": "${var.APP_PROFILE}"
+      }
+	],
+	
+	"logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/cb-app",
+          "awslogs-region": "${var.AWS_REGION}",
+          "awslogs-stream-prefix": "ecs"
+        }
+    },
+	
     "portMappings": [
       {
         "containerPort": ${var.APP_DEPLOYMENT_PORT},
